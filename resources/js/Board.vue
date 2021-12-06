@@ -3,7 +3,18 @@
         <div class="header text-white flex justify-between items-center mb-2 bg-purple-700">
             <div class="ml-2 w-1/3">A</div>
             <div class="text-lg opacity-50 cursor-pointer hover:opacity-75">Laravello</div>
-            <div class="mr-2 w-1/3 flex justify-end">C</div>
+            <div class="mr-2 w-1/3 flex justify-end">
+                <div v-if="isLoggedIn" class="flex items-center">
+                    <div class="text-sm mr-2">
+                        {{name}}
+                    </div>
+                    <button class="header-btn" @click="signOut">Log Out</button>
+                </div>
+                <div v-else>
+                    <button class="header-btn" @click="$router.push({name: 'login'})">Sign In</button>
+                    <button class="header-btn" @click="$router.push({name: 'register'})">Register</button>
+                </div>
+            </div>
         </div>
 
         <div class="h-full flex flex-1 flex-col items-stretch">
@@ -19,8 +30,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import List from './components/List';
 import BoardQuery from './graphql/BoardWithListsAndCards.gql';
+import Logout from './graphql/Logout.gql';
 import {EVENT_CARD_ADDED, EVENT_CARD_UPDATED, EVENT_CARD_DELETED} from "./constants";
 
 export default {
@@ -35,7 +48,30 @@ export default {
             }
         }
     },
+    // computed: {
+    //     isLoggedIn() {
+    //         return this.$store.state.isLoggedIn;
+    //     },
+    //     name() {
+    //         return this.$store.state.user.name;
+    //     }
+    // },
+    computed: mapState({
+        isLoggedIn: "isLoggedIn",
+        // isLoggedIn: state => state.isLoggedIn,
+        // name: state => state.user.name,
+        name: (state) => state.user.name
+    }),
     methods: {
+        async signOut() {
+            const response = await this.$apollo.mutate({
+                mutation: Logout,
+            });
+
+            if (response.data?.logout.id) {
+                this.$store.dispatch('logout');
+            }
+        },
         updateQueryCache(event) {
             const data = event.store.readQuery({
                 query: BoardQuery,

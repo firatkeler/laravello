@@ -2,10 +2,13 @@
     <div class="bg-white sm:bg-gray-100 h-full flex justify-center">
         <div class="container mt-2 sm:mt-10 flex flex-col items-center">
             <div class="text-3xl text-blue-700 font-bold mb-10">
-                <span>L</span>
+                <span>Laravello</span>
             </div>
 
             <div class="w-full sm:shadow-xl sm:bg-white sm:py-8 sm:px-12">
+
+                <Errors :errors="errors" />
+
                 <div class="w-full text-center text-gray-600 font-bold mb-8">Log in to Laravello</div>
 
                 <form @submit.prevent="authenticate">
@@ -48,23 +51,40 @@
 
 <script>
 import Login from './graphql/Login.gql';
+import Errors from "./components/Errors";
+import {gqlErrors} from "./utils";
 
 export default {
+    components: {
+        Errors
+    },
     data() {
         return {
             email: null,
             password: null,
+            errors: []
         }
     },
     methods: {
-        authenticate() {
-            this.$apollo.mutate({
-                mutation: Login,
-                variables: {
-                    email: this.email,
-                    password: this.password,
-                }
-            });
+        async authenticate() {
+            this.errors = [];
+
+            try {
+                await this.$apollo.mutate({
+                    mutation: Login,
+                    variables: {
+                        email: this.email,
+                        password: this.password,
+                    }
+                });
+
+                await this.$store.dispatch('setLoggedIn', true);
+
+                this.$router.push({name: "board"});
+            }
+            catch (error) {
+                this.errors = gqlErrors(error);
+            }
         }
     }
 }
