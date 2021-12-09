@@ -81,7 +81,7 @@ export default {
             this.errors = [];
 
             try {
-                await this.$apollo.mutate({
+                const response = await this.$apollo.mutate({
                     mutation: Register,
                     variables: {
                         email: this.email,
@@ -90,8 +90,15 @@ export default {
                     }
                 });
 
-                this.$store.dispatch('setIsLoggedIn', true);
-                this.$router.push({name: "board"});
+                const user = response.data?.register;
+
+                if (user) {
+                    await this.$store.dispatch('setIsLoggedIn', true);
+
+                    await this.$store.dispatch('setUser', user);
+
+                    this.$router.push({name: "board"});
+                }
             }
             catch (error) {
                 this.errors = gqlErrors(error);

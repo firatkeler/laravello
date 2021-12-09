@@ -3,14 +3,21 @@ query BoardWithListsAndCards($id: ID!) {
         id
         title
         color
+        owner_id
         lists {
             id
             title
             board_id
+            board {
+                owner {
+                    id
+                }
+            }
             cards {
                 id
                 title
                 order
+                owner_id
             }
         }
     }

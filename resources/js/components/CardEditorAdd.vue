@@ -6,6 +6,7 @@
 import {EVENT_CARD_ADDED} from "../constants";
 import CardAdd from '../graphql/CardAdd.gql';
 import CardEditor from "./CardEditor";
+import {mapState} from 'vuex';
 
 export default {
     components: {
@@ -19,6 +20,9 @@ export default {
             title: null,
         }
     },
+    computed: mapState({
+        id: state => state.user.id
+    }),
     methods: {
         addCard() {
             const self = this;
@@ -28,6 +32,7 @@ export default {
                     title: this.title,
                     order: this.list.cards.length + 1,
                     list_id: this.list.id,
+                    owner_id: this.id,
                 },
                 update(store, {data: {cardAdd}}) {
                     self.$emit('added', {

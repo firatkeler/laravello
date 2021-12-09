@@ -1,7 +1,9 @@
 <template>
-    <div class="h-full flex flex-col items-stretch bg-purple-600">
-        <div class="header text-white flex justify-between items-center mb-2 bg-purple-700">
-            <div class="ml-2 w-1/3">A</div>
+    <div class="h-full flex flex-col items-stretch" :class="bgColor">
+        <div class="header text-white flex justify-between items-center mb-2">
+            <div class="ml-2 w-1/3">
+                <UserBoardsDropdown />
+            </div>
             <div class="text-lg opacity-50 cursor-pointer hover:opacity-75">Laravello</div>
             <div class="mr-2 w-1/3 flex justify-end">
                 <div v-if="isLoggedIn" class="flex items-center">
@@ -32,19 +34,27 @@
 <script>
 import { mapState } from 'vuex'
 import List from './components/List';
+import UserBoardsDropdown from './components/UserBoardsDropdown';
 import BoardQuery from './graphql/BoardWithListsAndCards.gql';
 import Logout from './graphql/Logout.gql';
+import {colorMap500} from './utils';
 import {EVENT_CARD_ADDED, EVENT_CARD_UPDATED, EVENT_CARD_DELETED} from "./constants";
 
 export default {
     components: {
         List,
+        UserBoardsDropdown,
     },
     apollo: {
         board: {
             query: BoardQuery,
-            variables: {
-                id: 1,
+            // variables: {
+            //     id: 1,
+            // }
+            variables() {
+                return {
+                    id: Number(this.$route.params.id)
+                }
             }
         }
     },
@@ -56,12 +66,27 @@ export default {
     //         return this.$store.state.user.name;
     //     }
     // },
-    computed: mapState({
-        isLoggedIn: "isLoggedIn",
-        // isLoggedIn: state => state.isLoggedIn,
-        // name: state => state.user.name,
-        name: (state) => state.user.name
-    }),
+    // computed: mapState({
+    //     isLoggedIn: "isLoggedIn",
+    //     // isLoggedIn: state => state.isLoggedIn,
+    //     // name: state => state.user.name,
+    //     name: (state) => state.user.name,
+    //
+    // }),
+    computed: {
+        bgColor() {
+            return {
+                "bg-gray-500": this.$apollo.loading,
+                [colorMap500[this.board?.color]]: !this.$apollo.loading
+            }
+        },
+        ...mapState({
+         isLoggedIn: "isLoggedIn",
+         // isLoggedIn: state => state.isLoggedIn,
+         // name: state => state.user.name,
+         name: (state) => state.user.name
+        })
+    },
     methods: {
         async signOut() {
             const response = await this.$apollo.mutate({
@@ -105,5 +130,6 @@ export default {
 <style scoped>
 .header {
     height: 40px;
+    background-color: rgba(0,0,0,0.2);
 }
 </style>

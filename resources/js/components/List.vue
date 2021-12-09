@@ -7,7 +7,7 @@
         <Card v-for="card in list.cards" :key="card.id" :card="card" @updated="$emit('card-updated', {...$event, list_id: list.id})" @deleted="$emit('card-deleted', {...$event, list_id: list.id})"></Card>
 
         <CardEditorAdd v-if="editing" @closed="editing=false" :list="list" @added="$emit('card-added', {...$event, list_id: list.id})"></CardEditorAdd>
-        <AddCardButton v-else @click="editing=true"></AddCardButton>
+        <AddCardButton v-else-if="!editing && list.board.owner.id === id" @click="editing=true"></AddCardButton>
 
     </div>
 </template>
@@ -16,6 +16,7 @@
 import Card from '../components/Card';
 import CardEditorAdd from "./CardEditorAdd";
 import AddCardButton from '../components/AddCardButton';
+import {mapState} from 'vuex';
 
 export default {
     components: {
@@ -23,6 +24,9 @@ export default {
         CardEditorAdd,
         AddCardButton
     },
+    computed: mapState({
+        id: state => state.user.id,
+    }),
     props: {
         list: Object
     },
