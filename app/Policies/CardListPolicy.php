@@ -93,6 +93,6 @@ class CardListPolicy
     }
 
     public function createCardList(User $user, CardList $cardList) {
-        return $user->id == $cardList->board->id;
+        return $user->id == $cardList->board->owner_id;
     }
 }

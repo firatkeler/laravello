@@ -7752,6 +7752,26 @@ video {
   opacity: 1;
 }
 
+.disabled\:opacity-0:disabled {
+  opacity: 0;
+}
+
+.disabled\:opacity-25:disabled {
+  opacity: 0.25;
+}
+
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
+}
+
+.disabled\:opacity-75:disabled {
+  opacity: 0.75;
+}
+
+.disabled\:opacity-100:disabled {
+  opacity: 1;
+}
+
 .outline-none {
   outline: 0;
 }
@@ -16754,6 +16774,11 @@ video {
 .appear-enter, .appear-leave-to {
   opacity: 0;
   transform: translateY(20px);
+}
+
+.list {
+  min-width: 230px;
+  width: 230px;
 }
 
 @media (min-width: 640px) {
